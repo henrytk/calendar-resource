@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/HenryTK/calendar-resource/calendar"
-	"github.com/HenryTK/calendar-resource/errors"
-	"github.com/HenryTK/calendar-resource/models"
+	"github.com/henrytk/calendar-resource/calendar"
+	"github.com/henrytk/calendar-resource/errors"
+	"github.com/henrytk/calendar-resource/models"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/google"
 	googleCalendarAPI "google.golang.org/api/calendar/v3"

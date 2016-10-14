@@ -3,8 +3,8 @@ package calendar
 import (
 	"time"
 
-	"github.com/HenryTK/calendar-resource/errors"
-	"github.com/HenryTK/calendar-resource/models"
+	"github.com/henrytk/calendar-resource/errors"
+	"github.com/henrytk/calendar-resource/models"
 )
 
 type Event struct {

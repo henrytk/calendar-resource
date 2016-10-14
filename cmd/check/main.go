@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/HenryTK/calendar-resource/calendar"
-	"github.com/HenryTK/calendar-resource/client"
-	"github.com/HenryTK/calendar-resource/errors"
-	"github.com/HenryTK/calendar-resource/models"
+	"github.com/henrytk/calendar-resource/calendar"
+	"github.com/henrytk/calendar-resource/client"
+	"github.com/henrytk/calendar-resource/errors"
+	"github.com/henrytk/calendar-resource/models"
 )
 
 func main() {

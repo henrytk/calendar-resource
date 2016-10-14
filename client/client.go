@@ -3,9 +3,9 @@ package client
 import (
 	"fmt"
 
-	"github.com/HenryTK/calendar-resource/calendar"
-	"github.com/HenryTK/calendar-resource/errors"
-	"github.com/HenryTK/calendar-resource/models"
+	"github.com/henrytk/calendar-resource/calendar"
+	"github.com/henrytk/calendar-resource/errors"
+	"github.com/henrytk/calendar-resource/models"
 )
 
 // CalendarClient is an interface that must be satisfied in order to

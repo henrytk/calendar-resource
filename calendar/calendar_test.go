@@ -4,9 +4,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/HenryTK/calendar-resource/calendar"
-	"github.com/HenryTK/calendar-resource/calendar/fakes"
-	"github.com/HenryTK/calendar-resource/models"
+	"github.com/henrytk/calendar-resource/calendar"
+	"github.com/henrytk/calendar-resource/calendar/fakes"
+	"github.com/henrytk/calendar-resource/models"
 )
 
 func NewTestCalendar(events []calendar.Event, timeKeeper calendar.TimeKeeper) *calendar.Calendar {
