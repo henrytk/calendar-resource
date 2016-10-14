@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/henrytk/calendar-resource/calendar"
 	"github.com/henrytk/calendar-resource/errors"
@@ -14,6 +15,13 @@ type CalendarClient interface {
 
 	// Events uses the calendar provider's API to return a list of events
 	Events() []calendar.Event
+
+	// GetEvent takes the `in` request data and a directory path under which
+	// a file will be created. It uses the calendar provider's API to get
+	// the event details necessary to provide a response on standard output
+	// and populate a file. The file will then be placed in the Concourse
+	// task's file system.
+	GetEvent(*models.InRequest, string) (models.InResponse, *os.File, error)
 }
 
 func NewCalendarClient(source models.Source) CalendarClient {

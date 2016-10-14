@@ -20,3 +20,19 @@ type CheckRequest struct {
 	Source  Source  `json:"source"`
 	Version Version `json:"version"`
 }
+
+type InRequest struct {
+	Source  Source          `json:"source"`
+	Version Version         `json:"version"`
+	Params  json.RawMessage `json:"params"`
+}
+
+type InResponse struct {
+	Version  Version        `json:"version"`
+	MetaData []KeyValuePair `json:"metadata"`
+}
+
+type KeyValuePair struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}

@@ -83,7 +83,7 @@ func TimeToString(t time.Time) string {
 func StringToTime(str string) time.Time {
 	t, err := time.Parse(time.RFC3339, str)
 	if err != nil {
-		errors.Fatal("Failed parsing time: ", err)
+		errors.Fatal("parsing time: ", err)
 	}
 	return t
 
