@@ -6,5 +6,7 @@ go:
 
 install: go get github.com/onsi/ginkgo/ginkgo
 
-script: ginkgo -v calendar/
+script:
+  - ginkgo -v calendar/
+  - go build cmd/check/main.go
 
