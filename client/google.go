@@ -30,13 +30,14 @@ func NewGoogleCalendarClient(source models.Source) CalendarClient {
 	}
 }
 
-func (gcc *GoogleCalendarClient) Events(cal *calendar.Calendar) error {
+func (gcc *GoogleCalendarClient) Events() []calendar.Event {
+	var calendarEvents []calendar.Event
 	service, err := googleCalendarAPI.New(gcc.HTTPClient)
 	if err != nil {
 		errors.Fatal("Google calendar API error: ", err)
 	}
 
-	t := cal.Now().Format(time.RFC3339)
+	t := time.Now().Format(time.RFC3339)
 	events, err := service.Events.List(gcc.Source.CalendarId).ShowDeleted(false).
 		SingleEvents(true).TimeMin(t).OrderBy("startTime").Do()
 	if err != nil {
@@ -59,14 +60,14 @@ func (gcc *GoogleCalendarClient) Events(cal *calendar.Calendar) error {
 				} else {
 					endTime = gcc.parseDate(item.End.Date, events.TimeZone)
 				}
-				cal.Events = append(cal.Events, calendar.Event{
+				calendarEvents = append(calendarEvents, calendar.Event{
 					StartTime: startTime,
 					EndTime:   endTime,
 				})
 			}
 		}
 	}
-	return nil
+	return calendarEvents
 }
 
 func (gcc *GoogleCalendarClient) parseTime(timeString string) time.Time {

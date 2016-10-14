@@ -12,9 +12,8 @@ import (
 // implement other calendar providers.
 type CalendarClient interface {
 
-	// Events takes a calendar and must populate calendar.Events using
-	// the calendar provider's API.
-	Events(*calendar.Calendar) error
+	// Events uses the calendar provider's API to return a list of events
+	Events() []calendar.Event
 }
 
 func NewCalendarClient(source models.Source) CalendarClient {
