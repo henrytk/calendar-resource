@@ -42,7 +42,7 @@ func (gcc *GoogleCalendarClient) getService() *googleCalendarAPI.Service {
 	return service
 }
 
-func (gcc *GoogleCalendarClient) Events() []calendar.Event {
+func (gcc *GoogleCalendarClient) ListEvents() []calendar.Event {
 	var calendarEvents []calendar.Event
 	service := gcc.getService()
 

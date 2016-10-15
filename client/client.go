@@ -13,8 +13,8 @@ import (
 // implement other calendar providers.
 type CalendarClient interface {
 
-	// Events uses the calendar provider's API to return a list of events
-	Events() []calendar.Event
+	// ListEvents uses the calendar provider's API to return a list of events
+	ListEvents() []calendar.Event
 
 	// GetEvent takes the `in` request data and a directory path under which
 	// a file will be created. It uses the calendar provider's API to get

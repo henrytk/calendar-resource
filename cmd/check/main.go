@@ -15,7 +15,7 @@ func main() {
 	inputRequest(&checkRequest)
 	calendarClient := client.NewCalendarClient(checkRequest.Source)
 	calendar := calendar.NewCalendar()
-	calendar.Events = calendarClient.Events()
+	calendar.Events = calendarClient.ListEvents()
 	currentVersions := calendar.CurrentVersions(checkRequest.Version)
 	outputResponse(currentVersions)
 }
