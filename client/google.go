@@ -145,6 +145,46 @@ func (gcc *GoogleCalendarClient) GetEvent(inRequest *models.InRequest, targetDir
 	return inResponse, file, nil
 }
 
+// AddEventParams holds data passed in via `params` from the
+// Conncourse task. StartTime and EndTime must be an RFC3339
+// formatted time string. For example, "2016-10-15T08:00:00+01:00"
+type AddEventParams struct {
+	Description string `json:"description,omitempty"`
+	EndTime     string `json:"end_time"`
+	StartTime   string `json:"start_time"`
+	Summary     string `json:"summary,omitempty"`
+	TimeZone    string `json:"time_zone,omitempty"`
+}
+
+func (gcc *GoogleCalendarClient) AddEvent(outRequest *models.OutRequest, buildSourcePath string) {
+	var addEventParams AddEventParams
+	if err := json.Unmarshal(outRequest.Params, &addEventParams); err != nil {
+		errors.Fatal("decoding event params", err)
+	}
+	if addEventParams.StartTime == "" || addEventParams.EndTime == "" {
+		errors.Fatal("adding event", fmt.Errorf("You must supply an event start and end time"))
+	}
+	service := gcc.getService()
+	event := googleCalendarAPI.Event{
+		// These values are not currently supported by the calendar resource, but
+		// are not optional, so we pass empty literals.
+		Attachments: []*googleCalendarAPI.EventAttachment{},
+		Attendees:   []*googleCalendarAPI.EventAttendee{},
+		Reminders:   &googleCalendarAPI.EventReminders{},
+
+		// These values can be set by the calendar resource. Only Start and End
+		// are mandatory.
+		Description: addEventParams.Description,
+		End:         &googleCalendarAPI.EventDateTime{TimeZone: addEventParams.TimeZone, DateTime: addEventParams.EndTime},
+		Start:       &googleCalendarAPI.EventDateTime{TimeZone: addEventParams.TimeZone, DateTime: addEventParams.StartTime},
+		Summary:     addEventParams.Summary,
+	}
+	_, err := service.Events.Insert(outRequest.Source.CalendarId, &event).Do()
+	if err != nil {
+		errors.Fatal("adding event", err)
+	}
+}
+
 func (gcc *GoogleCalendarClient) parseTime(timeString string) time.Time {
 	t, err := time.Parse(time.RFC3339, timeString)
 	if err != nil {

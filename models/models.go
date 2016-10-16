@@ -36,3 +36,8 @@ type KeyValuePair struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
 }
+
+type OutRequest struct {
+	Source Source          `json:"source"`
+	Params json.RawMessage `json:"params"`
+}

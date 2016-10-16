@@ -22,6 +22,12 @@ type CalendarClient interface {
 	// and populate a file. The file will then be placed in the Concourse
 	// task's file system.
 	GetEvent(*models.InRequest, string) (models.InResponse, *os.File, error)
+
+	// AddEvent takes an `out` request and the path to the build sources and
+	// creates a calendar event. The calendar client must make its own data
+	// structures to hold the data passed in via `params`. It must os.Exit
+	// if any error condition is encountered
+	AddEvent(*models.OutRequest, string)
 }
 
 func NewCalendarClient(source models.Source) CalendarClient {
