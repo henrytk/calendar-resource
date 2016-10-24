@@ -8,12 +8,13 @@ import (
 	"github.com/henrytk/calendar-resource/client"
 	"github.com/henrytk/calendar-resource/errors"
 	"github.com/henrytk/calendar-resource/models"
+	googleCalendarAPI "google.golang.org/api/calendar/v3"
 )
 
 func main() {
 	var checkRequest models.CheckRequest
 	inputRequest(&checkRequest)
-	calendarClient := client.NewCalendarClient(checkRequest.Source)
+	calendarClient := client.NewCalendarClient(checkRequest.Source, googleCalendarAPI.CalendarReadonlyScope)
 	calendar := calendar.NewCalendar()
 	calendar.Events = calendarClient.ListEvents()
 	currentVersions := calendar.CurrentVersions(checkRequest.Version)

@@ -21,9 +21,9 @@ type GoogleCalendarClient struct {
 	HTTPClient *http.Client
 }
 
-func NewGoogleCalendarClient(source models.Source) CalendarClient {
+func NewGoogleCalendarClient(source models.Source, args ...string) CalendarClient {
 	ctx := context.Background()
-	config, err := google.JWTConfigFromJSON(source.Credentials, googleCalendarAPI.CalendarReadonlyScope)
+	config, err := google.JWTConfigFromJSON(source.Credentials, args[0])
 	if err != nil {
 		errors.Fatal("JWTConfigFromJSON error: ", err)
 	}

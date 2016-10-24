@@ -8,6 +8,7 @@ import (
 	"github.com/henrytk/calendar-resource/client"
 	"github.com/henrytk/calendar-resource/errors"
 	"github.com/henrytk/calendar-resource/models"
+	googleCalendarAPI "google.golang.org/api/calendar/v3"
 )
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 
 	var inRequest models.InRequest
 	inputRequest(&inRequest)
-	calendarClient := client.NewCalendarClient(inRequest.Source)
+	calendarClient := client.NewCalendarClient(inRequest.Source, googleCalendarAPI.CalendarReadonlyScope)
 	inResponse, file, err := calendarClient.GetEvent(&inRequest, targetDirectory)
 	if err != nil {
 		errors.Fatal("getting event details for input file", err)

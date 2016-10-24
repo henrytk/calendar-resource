@@ -8,6 +8,7 @@ import (
 	"github.com/henrytk/calendar-resource/client"
 	"github.com/henrytk/calendar-resource/errors"
 	"github.com/henrytk/calendar-resource/models"
+	googleCalendarAPI "google.golang.org/api/calendar/v3"
 )
 
 func main() {
@@ -18,7 +19,7 @@ func main() {
 	var outRequest models.OutRequest
 	inputRequest(&outRequest)
 
-	calendarClient := client.NewCalendarClient(outRequest.Source)
+	calendarClient := client.NewCalendarClient(outRequest.Source, googleCalendarAPI.CalendarScope)
 	calendarClient.AddEvent(&outRequest, os.Args[1])
 	outputResponse(&outRequest)
 }

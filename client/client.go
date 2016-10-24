@@ -30,11 +30,11 @@ type CalendarClient interface {
 	AddEvent(*models.OutRequest, string)
 }
 
-func NewCalendarClient(source models.Source) CalendarClient {
+func NewCalendarClient(source models.Source, args ...string) CalendarClient {
 	var client CalendarClient
 	switch source.Provider {
 	case "google":
-		client = NewGoogleCalendarClient(source)
+		client = NewGoogleCalendarClient(source, args[0])
 	default:
 		errors.Fatal("Provider error: ", fmt.Errorf("Provider '%v' is not supported", source.Provider))
 	}
