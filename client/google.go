@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/henrytk/calendar-resource/calendar"
 	"github.com/henrytk/calendar-resource/errors"
 	"github.com/henrytk/calendar-resource/models"
 	"golang.org/x/net/context"
@@ -42,13 +41,14 @@ func (gcc *GoogleCalendarClient) getService() *googleCalendarAPI.Service {
 	return service
 }
 
-func (gcc *GoogleCalendarClient) ListEvents() []calendar.Event {
-	var calendarEvents []calendar.Event
+func (gcc *GoogleCalendarClient) ListEvents(requestedVersion models.Version) []models.Version {
+	var currentVersions []models.Version
 	service := gcc.getService()
 
-	t := time.Now().Format(time.RFC3339)
+	now := time.Now()
+	formattedTime := now.Format(time.RFC3339)
 	events, err := service.Events.List(gcc.Source.CalendarId).ShowDeleted(false).
-		SingleEvents(true).TimeMin(t).OrderBy("startTime").Do()
+		SingleEvents(true).TimeMin(formattedTime).OrderBy("startTime").Do()
 	if err != nil {
 		errors.Fatal("getting events using calendar client", err)
 	}
@@ -63,42 +63,51 @@ func (gcc *GoogleCalendarClient) ListEvents() []calendar.Event {
 				} else {
 					startTime = gcc.parseDate(item.Start.Date, events.TimeZone)
 				}
-				var endTime time.Time
-				if item.End.DateTime != "" {
-					endTime = gcc.parseTime(item.End.DateTime)
-				} else {
-					endTime = gcc.parseDate(item.End.Date, events.TimeZone)
+				if now.After(startTime) {
+					if item.Id == requestedVersion.Id {
+						return []models.Version{models.Version{Id: item.Id}}
+					}
+					currentVersions = append(currentVersions, models.Version{Id: item.Id})
 				}
-				calendarEvents = append(calendarEvents, calendar.Event{
-					StartTime: startTime,
-					EndTime:   endTime,
-				})
 			}
 		}
 	}
-	return calendarEvents
+	return currentVersions
 }
 
 func (gcc *GoogleCalendarClient) GetEvent(inRequest *models.InRequest, targetDirectory string) (models.InResponse, *os.File, error) {
-	startTime := inRequest.Version.StartTime
-	endTime := inRequest.Version.EndTime
-	if startTime == "" || endTime == "" {
-		errors.Fatal("fetching resource version", fmt.Errorf("resource version start time or end time not specified"))
+	if inRequest.Version.Id == "" {
+		errors.Fatal("fetching resource version", fmt.Errorf("calendar event ID not specified"))
 	}
 	service := gcc.getService()
-	events, err := service.Events.List(gcc.Source.CalendarId).ShowDeleted(false).
-		SingleEvents(true).TimeMin(endTime).OrderBy("startTime").Do()
+	event, err := service.Events.Get(gcc.Source.CalendarId, inRequest.Version.Id).Do()
 	if err != nil {
-		errors.Fatal("getting events using calendar client", err)
+		errors.Fatal("getting event using calendar client", err)
 	}
-	if len(events.Items) == 0 {
-		errors.Fatal("fetching resource version", fmt.Errorf("Event start time: %v, end time: %v", startTime, endTime))
+	var start, end string
+	if event.Start.DateTime != "" {
+		start = event.Start.DateTime
+	} else {
+		start = event.Start.Date
 	}
-	event := events.Items[0]
-	if event.Summary != gcc.Source.EventName {
-		errors.Fatal("fetching resource version", fmt.Errorf("Event not found"))
+	if event.End.DateTime != "" {
+		end = event.End.DateTime
+	} else {
+		end = event.End.Date
 	}
 	keyValuePairs := []models.KeyValuePair{
+		models.KeyValuePair{
+			Name:  "time_zone",
+			Value: event.Start.TimeZone,
+		},
+		models.KeyValuePair{
+			Name:  "start",
+			Value: start,
+		},
+		models.KeyValuePair{
+			Name:  "end",
+			Value: end,
+		},
 		models.KeyValuePair{
 			Name:  "created",
 			Value: event.Created,
@@ -118,10 +127,6 @@ func (gcc *GoogleCalendarClient) GetEvent(inRequest *models.InRequest, targetDir
 		models.KeyValuePair{
 			Name:  "iCalUid",
 			Value: event.ICalUID,
-		},
-		models.KeyValuePair{
-			Name:  "Id",
-			Value: event.Id,
 		},
 		models.KeyValuePair{
 			Name:  "summary",
@@ -156,7 +161,7 @@ type AddEventParams struct {
 	TimeZone    string `json:"time_zone,omitempty"`
 }
 
-func (gcc *GoogleCalendarClient) AddEvent(outRequest *models.OutRequest, buildSourcePath string) {
+func (gcc *GoogleCalendarClient) AddEvent(outRequest *models.OutRequest, buildSourcePath string) models.OutResponse {
 	var addEventParams AddEventParams
 	if err := json.Unmarshal(outRequest.Params, &addEventParams); err != nil {
 		errors.Fatal("decoding event params", err)
@@ -179,10 +184,11 @@ func (gcc *GoogleCalendarClient) AddEvent(outRequest *models.OutRequest, buildSo
 		Start:       &googleCalendarAPI.EventDateTime{TimeZone: addEventParams.TimeZone, DateTime: addEventParams.StartTime},
 		Summary:     addEventParams.Summary,
 	}
-	_, err := service.Events.Insert(outRequest.Source.CalendarId, &event).Do()
+	e, err := service.Events.Insert(outRequest.Source.CalendarId, &event).Do()
 	if err != nil {
 		errors.Fatal("adding event", err)
 	}
+	return models.OutResponse{Version: models.Version{Id: e.Id}}
 }
 
 func (gcc *GoogleCalendarClient) parseTime(timeString string) time.Time {
