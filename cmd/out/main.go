@@ -20,8 +20,8 @@ func main() {
 	inputRequest(&outRequest)
 
 	calendarClient := client.NewCalendarClient(outRequest.Source, googleCalendarAPI.CalendarScope)
-	calendarClient.AddEvent(&outRequest, os.Args[1])
-	outputResponse(&outRequest)
+	outResponse := calendarClient.AddEvent(&outRequest, os.Args[1])
+	outputResponse(&outResponse)
 }
 
 func inputRequest(request *models.OutRequest) {
@@ -30,10 +30,8 @@ func inputRequest(request *models.OutRequest) {
 	}
 }
 
-// outputResponse emits the requested calendar event to standard output.
-// The Concourse interface demands the generated version of the resource
-// is emitted, but calendar event versions are identified by a calendar ID,
-// which is a value you cannot do much with.
-func outputResponse(request *models.OutRequest) {
-	os.Stdout.Write(request.Params)
+func outputResponse(response *models.OutResponse) {
+	if err := json.NewEncoder(os.Stdout).Encode(response); err != nil {
+		errors.Fatal("writing response to stdout", err)
+	}
 }

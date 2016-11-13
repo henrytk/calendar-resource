@@ -12,8 +12,7 @@ type Source struct {
 }
 
 type Version struct {
-	StartTime string `json:"start_time"`
-	EndTime   string `json:"end_time"`
+	Id string `json:"id"`
 }
 
 type CheckRequest struct {
@@ -40,4 +39,8 @@ type KeyValuePair struct {
 type OutRequest struct {
 	Source Source          `json:"source"`
 	Params json.RawMessage `json:"params"`
+}
+
+type OutResponse struct {
+	Version Version `json:"version"`
 }

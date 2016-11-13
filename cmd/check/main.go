@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/henrytk/calendar-resource/calendar"
 	"github.com/henrytk/calendar-resource/client"
 	"github.com/henrytk/calendar-resource/errors"
 	"github.com/henrytk/calendar-resource/models"
@@ -15,9 +14,7 @@ func main() {
 	var checkRequest models.CheckRequest
 	inputRequest(&checkRequest)
 	calendarClient := client.NewCalendarClient(checkRequest.Source, googleCalendarAPI.CalendarReadonlyScope)
-	calendar := calendar.NewCalendar()
-	calendar.Events = calendarClient.ListEvents()
-	currentVersions := calendar.CurrentVersions(checkRequest.Version)
+	currentVersions := calendarClient.ListEvents(checkRequest.Version)
 	outputResponse(currentVersions)
 }
 
