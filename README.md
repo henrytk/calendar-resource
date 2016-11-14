@@ -15,7 +15,7 @@ This is an [implementation of a Concourse resource](https://concourse.ci/impleme
 
 Here is an example resource configuration for a pipeline:
 
-```
+``` yaml
 resource_types:
 - name: calendar
   type: docker-image
@@ -47,7 +47,7 @@ resources:
 
 Based on the example resource configuration above you can use a Google calendar event to trigger a job like this:
 
-```
+``` yaml
 jobs:
 - name: calendar-resource-example
   plan:
@@ -76,7 +76,7 @@ Concourse will poll for new versions of the resource. Any event in the calendar 
 
 The resource can also be used to add an event to a Google calendar:
 
-```
+``` yaml
 jobs:
 - name: calendar-resource-example-two
   plan:
